@@ -1,7 +1,7 @@
 <?php
+    session_start();
     include "../../conf.php";
     include BASE_PATH . "/controllers/UserController.php";
-    session_start();
 
     $error = $_SESSION["error"] ?? [];
     unset($_SESSION["error"]);

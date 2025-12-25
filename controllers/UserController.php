@@ -1,21 +1,20 @@
 <?php
 
-    include __DIR__ . "/CardController.php";
-    include __DIR__ . "/TransactionController.php";
-    include __DIR__ . "/MailController.php";
+    require_once __DIR__ . "/CardController.php";
+    require_once __DIR__ . "/TransactionController.php";
+    require_once __DIR__ . "/MailController.php";
+    require_once __DIR__ . "/Database.php";
+
+    use Database\Database;
 
     class UserController {
-        private static $connection;
+        private static PDO $connection;
 
-        static function Connect (){
-            try {
-                self::$connection = new PDO("mysql:host=localhost;dbname=jibk2.0", "root", "Brahim@444");
-            }catch (PDOException $e){
-                echo "error: " . $e->getMessage();
-            }
+        public static function Connect (){
+            self::$connection = Database::instance();
         }
 
-        static function Find (string $id) {
+        public static function Find (string $id) {
             $user_statment = self::$connection->prepare("
                 SELECT *
                 FROM users
@@ -29,7 +28,7 @@
             return $user_statment->fetch(PDO::FETCH_ASSOC);
         }
 
-        static function Create (string $username, string $email, string $password) {
+        public static function Create (string $username, string $email, string $password) {
             $insert_user_statment = self::$connection->prepare("
                 INSERT INTO users (username, email, password)
                 VALUES (:username, :email, :password)
@@ -42,7 +41,7 @@
             ]);
         }
 
-        static function SignUp (string $username, string $email, string $password, string $password_confirmation, string $bank, int $initial_balance, string $type) {
+        public static function SignUp (string $username, string $email, string $password, string $password_confirmation, string $bank, int $initial_balance, string $type) {
             $errors = [];
 
             if (strlen($username) < 6) $errors["username"] = "User name must be at least 6 characters.";
@@ -104,7 +103,7 @@
             return ["success" => true];
         }
 
-        static function login (string $email, string $password){
+        public static function login (string $email, string $password){
             $errors = [];
 
             $user_statment = self::$connection->prepare("
@@ -143,7 +142,7 @@
             ];
         }
 
-        static function Otp_check (string $user_id, string $otp) {
+        public static function Otp_check (string $user_id, string $otp) {
             $otp_statment = self::$connection->prepare("
                 SELECT *
                 FROM otp
@@ -161,4 +160,4 @@
         }
     }
 
-    UserController::connect();
+    UserController::Connect();

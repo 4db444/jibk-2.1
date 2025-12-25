@@ -1,14 +1,14 @@
 <?php
+    require_once __DIR__ . "/Database.php";
+
+    use Database\Database;
+
     class TransactionController {
 
         private static $connection;
 
         static function Connect () {
-            try {
-                self::$connection = new PDO("mysql:host=localhost;dbname=jibk2.0", "root", "Brahim@444");
-            }catch(PDOException $e){
-                echo "Error: " . $e->getMessage();
-            }
+            self::$connection = Database::instance();
         }
 
         static function CreateTransaction (string $type, string $title, float $amount, string $description, $date, int $card_id,$category_id, $user_id, bool $is_reccuring){

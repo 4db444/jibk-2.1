@@ -1,20 +1,16 @@
 <?php
+    require_once __DIR__ . "/Database.php";
+
+    use Database\Database;
 
     class CardController {
-        public static $connection;
+        private static PDO $connection;
 
-        static function Connect (){
-            try {
-                self::$connection = new PDO("mysql:host=localhost;dbname=jibk2.0", "root", "Brahim@444");
-                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-
-            }catch (PDOException $e){
-                echo "error: " . $e->getMessage();
-            }
+        public static function Connect (){
+            self::$connection = Database::instance();
         }
 
-        static function Create (string $bank, string $type, int $is_main, int $user_id) {
+        public static function Create (string $bank, string $type, int $is_main, int $user_id) {
             $errors = [];
 
             if (empty($bank)) $errors["bank"] = "Invalide bank name";
@@ -44,7 +40,7 @@
             ];
         }
 
-        static function GetAllUserCards (int $user_id){
+        public static function GetAllUserCards (int $user_id){
             return self::$connection->query("
                 SELECT *
                 FROM cards
@@ -52,17 +48,17 @@
             ")->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        static function GetTotalExpenses(int $id){
+        public static function GetTotalExpenses(int $id){
             return (float) self::$connection->query("
                 select sum(amount) AS total from expenses where card_id = $id
             ")->fetch(PDO::FETCH_ASSOC)["total"];
         }
 
-        static function GetTotalIncomes(int $id){
+        public static function GetTotalIncomes(int $id){
             return (float) self::$connection->query("select sum(amount) AS total from incomes where card_id = $id")->fetch(PDO::FETCH_ASSOC)["total"];
         }
 
-        static function SetDefault (int $id, int $user_id){
+        public static function SetDefault (int $id, int $user_id){
             self::$connection->query("
                 update cards
                 set is_main = 0
@@ -75,7 +71,7 @@
             ");
         }
 
-        static function destroy (int $id) {
+        public static function destroy (int $id) {
             $user_id = $_SESSION["user"]["id"];
 
             $count_cards_statment = self::$connection->prepare("

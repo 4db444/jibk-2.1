@@ -1,6 +1,6 @@
 <?php 
-    include __DIR__ . "/../../conf.php";
     session_start();
+    include __DIR__ . "/../../conf.php";
 
     if($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_SESSION["user"])){
         session_destroy();

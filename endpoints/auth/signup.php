@@ -1,8 +1,7 @@
 <?php
+    session_start();
     include "../../conf.php";
     if ($_SERVER["REQUEST_METHOD"] === "POST"){
-
-        session_start();
 
         include BASE_PATH . "/controllers/UserController.php";
     
