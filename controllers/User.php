@@ -92,7 +92,7 @@
             return ["success" => true];
         }
 
-        public function login (){
+        public static function Login ($email, $password){
             $errors = [];
 
             $user_statment = self::$connection->prepare("
@@ -102,14 +102,14 @@
             ");
 
             $user_statment->execute([
-                ":email" => $this->email
+                ":email" => $email
             ]);
 
             $user = $user_statment->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($this->password, $user["password"])){
+            if ($user && password_verify($password, $user["password"])){
 
-                OTP::Send($this->email, $user["id"]);
+                OTP::Send($email, $user["id"]);
 
                 return [
                     "success" => true,

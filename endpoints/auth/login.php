@@ -10,8 +10,7 @@
         $email = trim($_POST["email"]);
         $password = $_POST["password"];
 
-        $user = new User($email, $password);
-        $result = $user->login();
+        $result = User::Login($email, $password);
 
         if(!$result["success"]){
             $_SESSION["error"] = $result["error"];

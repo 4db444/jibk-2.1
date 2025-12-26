@@ -81,14 +81,16 @@
         static function ShowAllTransactions (){
             return self::$connection->query("
                 (
-                    select incomes.id, title, amount, description, date, bank, type, 'incomes' as 'table' from incomes 
+                    select incomes.id, title, amount, description, name as category, date, bank, type, 'incomes' as 'table' from incomes 
                     join cards on cards.id = incomes.card_id
+                    left join incomes_categories on incomes_categories.id = incomes.category_id
                     where cards.user_id = {$_SESSION["user_id"]}
                 )
                 union all
                 (
-                    select expenses.id, title, amount, description, date, bank, type, 'expenses' as 'table' from expenses
+                    select expenses.id, title, amount, description, name as category, date, bank, type, 'expenses' as 'table' from expenses
                     join cards on expenses.card_id = cards.id
+                    left join expenses_categories on expenses_categories.id = expenses.category_id
                     where cards.user_id = {$_SESSION["user_id"]}
                 ) 
                 ORDER BY date desc, id desc

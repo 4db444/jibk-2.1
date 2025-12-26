@@ -9,10 +9,19 @@
     include BASE_PATH . "/controllers/Card.php";
     include BASE_PATH . "/controllers/Category.php";
 
+    $type_filter = $_GET["type"] ?? "";
+    $category_filter = $_GET["category"] ?? "";
+
     $cards = Card::GetAllUserCards($_SESSION["user_id"]);
 
     $incomes_categories = Category::GetCategories("incomes");
     $expenses_categories = Category::GetCategories("expenses");
+
+    $transactions = Transaction::ShowAllTransactions();
+
+    if($type_filter) $transactions = array_filter($transactions, fn($transaction) => $transaction["table"] === $type_filter);
+    if($type_filter && $category_filter) $transactions = array_filter($transactions, fn($transaction) => $transaction["category"] === $category_filter);
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,6 +124,55 @@
 
     <!-- Table Container -->
     <div class="max-w-7xl mx-auto p-6 bg-white shadow rounded-lg">
+        <form id="category_filter"
+            method="get"
+            action=""
+            class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg flex flex-wrap items-end gap-4">
+
+            <!-- Type filter -->
+            <div class="flex flex-col gap-1">
+                <label for="type" class="text-sm font-medium text-gray-700">
+                    Transaction Type
+                </label>
+                <select name="type" id="type"
+                        class="border border-gray-300 px-3 py-2 rounded-lg text-sm capitalize
+                            focus:ring-2 focus:ring-green-500 outline-none bg-white min-w-[160px]">
+                    <option value="" <?= $type_filter === "" ? "selected" : "" ?>>All</option>
+                    <option value="incomes" <?= $type_filter === "incomes" ? "selected" : "" ?>>Income</option>
+                    <option value="expenses" <?= $type_filter === "expenses" ? "selected" : "" ?>>Expense</option>
+                </select>
+            </div>
+
+            <!-- Category filter -->
+            <div class="flex flex-col gap-1">
+                <label for="category" class="text-sm font-medium text-gray-700">
+                    Category
+                </label>
+                <select name="category" id="category"
+                        class="border border-gray-300 px-3 py-2 rounded-lg text-sm capitalize
+                            focus:ring-2 focus:ring-green-500 outline-none bg-white min-w-[180px]">
+                    <option value="">All</option>
+
+                    <?php if($type_filter === "expenses"): ?>
+                        <?php foreach ($expenses_categories as $category): ?>
+                            <option value="<?= $category["name"] ?>"
+                                    <?= $category["name"] === $category_filter ? "selected" : "" ?>>
+                                <?= $category["name"] ?>
+                            </option>
+                        <?php endforeach; ?>
+
+                    <?php elseif($type_filter === "incomes") : ?>
+                        <?php foreach ($incomes_categories as $category): ?>
+                            <option value="<?= $category["name"] ?>"
+                                    <?= $category["name"] === $category_filter ? "selected" : "" ?>>
+                                <?= $category["name"] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+        </form>
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-gray-100 border-b border-gray-300 text-left">
@@ -123,6 +181,7 @@
                     <th class="py-3 px-2 font-semibold">Type</th>
                     <th class="py-3 px-2 font-semibold">Date</th>
                     <th class="py-3 px-2 font-semibold">Description</th>
+                    <th class="py-3 px-2 font-semibold">Category</th>
                     <th class="py-3 px-2 font-semibold">Bank</th>
                     <th class="py-3 px-2 font-semibold">Type</th>
                     <th class="py-3 px-2 font-semibold">Actions</th>
@@ -131,8 +190,6 @@
 
             <tbody>
                 <?php
-                    $transactions = Transaction::ShowAllTransactions();
-
                     foreach ($transactions as $transaction) {
 
                         $isExpense = $transaction["table"] === "expenses";
@@ -152,6 +209,7 @@
 
                             <td class='py-3 px-2'>{$transaction["date"]}</td>
                             <td class='py-3 px-2'>{$transaction["description"]}</td>
+                            <td class='py-3 px-2'>{$transaction["category"]}</td>
                             <td class='py-3 px-2 uppercase'>{$transaction["bank"]}</td>
                             <td class='py-3 px-2 uppercase'>{$transaction["type"]}</td>
 
@@ -190,6 +248,9 @@
         const typeSelect = document.getElementById("type");
         const categoriesContainer = document.getElementById("categories-container");
         const categorySelect = document.getElementById("category_id");
+        const filterForm = document.getElementById("category_filter");
+        const typeFilterSelect = document.querySelector("#category_filter #type");
+        const categoryFilterSelect = document.querySelector("#category_filter #category");
         const expensesCategories = <?= json_encode($expenses_categories) ?>;
         const incomesCategories = <?= json_encode($incomes_categories) ?>;
 
@@ -219,7 +280,10 @@
             if (e.target.id === "modal") modal.classList.add("hidden");
         });
 
-
+        filterForm.addEventListener("change", e => {
+            if (e.target.id === "type") categoryFilterSelect.value = "";
+            filterForm.submit(  )
+        })
     </script>
 
 </body>
