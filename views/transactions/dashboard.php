@@ -1,20 +1,20 @@
 <?php
     include "../../conf.php";
     session_start();
-    if (!isset($_SESSION["user"])){
+    if (!isset($_SESSION["user_id"])){
         header("location: " . BASE_URL . "/views/auth/login.php");
         die();
     }
-    include "../../controllers/TransactionController.php";
+    include "../../controllers/Transaction.php";
 
-    $total_incomes = TransactionController::GetTotoalTransactions("incomes", $_SESSION["user"]["id"]) ?? 0;
-    $total_expenses = TransactionController::GetTotoalTransactions("expenses", $_SESSION["user"]["id"]) ?? 0;
+    $total_incomes = Transaction::GetTotoalTransactions("incomes", $_SESSION["user_id"]) ?? 0;
+    $total_expenses = Transaction::GetTotoalTransactions("expenses", $_SESSION["user_id"]) ?? 0;
 
-    $total_expenses_per_month = TransactionController::GetTotoalTransactionsPerMonth("expenses", $_SESSION["user"]["id"]) ?? [];
-    $total_incomes_per_month = TransactionController::GetTotoalTransactionsPerMonth("incomes", $_SESSION["user"]["id"]) ?? [];
+    $total_expenses_per_month = Transaction::GetTotoalTransactionsPerMonth("expenses", $_SESSION["user_id"]) ?? [];
+    $total_incomes_per_month = Transaction::GetTotoalTransactionsPerMonth("incomes", $_SESSION["user_id"]) ?? [];
 
-    $current_month_expenses = TransactionController::GetCurrentMonthTransactions("expenses", $_SESSION["user"]["id"]) ?? 0;
-    $current_month_incomes = TransactionController::GetCurrentMonthTransactions("incomes", $_SESSION["user"]["id"]) ?? 0;
+    $current_month_expenses = Transaction::GetCurrentMonthTransactions("expenses", $_SESSION["user_id"]) ?? 0;
+    $current_month_incomes = Transaction::GetCurrentMonthTransactions("incomes", $_SESSION["user_id"]) ?? 0;
 ?>
 
 <!DOCTYPE html>

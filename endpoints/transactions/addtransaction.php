@@ -1,7 +1,7 @@
 <?php
     session_start();
     include "../../conf.php";
-    include BASE_PATH . "/controllers/TransactionController.php";
+    include BASE_PATH . "/controllers/Transaction.php";
 
     if($_SERVER["REQUEST_METHOD"]){
         $type = $_POST["type"];
@@ -13,7 +13,7 @@
         $date = $_POST["date"] == "" ? null : $_POST["date"];
         $is_reccuring = ($_POST["is_reccuring"] ?? NULL) ? true : false;
     
-        $result = TransactionController::CreateTransaction($type, $title, $amount, $description, $date, $card_id, $category_id, $_SESSION["user"]["id"], $is_reccuring);
+        $result = Transaction::CreateTransaction($type, $title, $amount, $description, $date, $card_id, $category_id, $_SESSION["user_id"], $is_reccuring);
 
         if(!$result["success"]){
             $_SESSION["error"] = $result["error"];

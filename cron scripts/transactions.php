@@ -1,10 +1,10 @@
 <?php
-    include __DIR__ . "/../controllers/TransactionController.php";
+    include __DIR__ . "/../controllers/Transaction.php";
 
-    $transactoin_events = TransactionController::GetEventTransactions();
+    $transactoin_events = Transaction::GetEventTransactions();
 
     foreach($transactoin_events as $event){
-        TransactionController::CreateTransaction(
+        Transaction::CreateTransaction(
             $event["type"],
             $event["title"],
             $event["amount"],

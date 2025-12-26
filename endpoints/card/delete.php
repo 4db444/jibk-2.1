@@ -1,10 +1,10 @@
 <?php
     session_start();
     include "../../conf.php";
-    include  BASE_PATH . "/controllers/CardController.php";
+    include  BASE_PATH . "/controllers/Card.php";
     if ($_SERVER["REQUEST_METHOD"] === "POST"){
         $id = $_POST["id"];
-        $result = CardController::destroy($id);
+        $result = Card::destroy($id);
         if (!$result["success"]){
             $_SESSION["errors"] = $result["errors"];
         }

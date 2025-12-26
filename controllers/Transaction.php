@@ -3,7 +3,7 @@
 
     use Database\Database;
 
-    class TransactionController {
+    class Transaction {
 
         private static $connection;
 
@@ -83,13 +83,13 @@
                 (
                     select incomes.id, title, amount, description, date, bank, type, 'incomes' as 'table' from incomes 
                     join cards on cards.id = incomes.card_id
-                    where cards.user_id = {$_SESSION["user"]["id"]}
+                    where cards.user_id = {$_SESSION["user_id"]}
                 )
                 union all
                 (
                     select expenses.id, title, amount, description, date, bank, type, 'expenses' as 'table' from expenses
                     join cards on expenses.card_id = cards.id
-                    where cards.user_id = {$_SESSION["user"]["id"]}
+                    where cards.user_id = {$_SESSION["user_id"]}
                 ) 
                 ORDER BY date desc, id desc
             ")->fetchAll(PDO::FETCH_ASSOC);
@@ -195,4 +195,4 @@
         }
     }
 
-    TransactionController::Connect();
+    Transaction::Connect();

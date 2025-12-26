@@ -1,18 +1,18 @@
 <?php
     include "../../conf.php";
     session_start();
-    if (!isset($_SESSION["user"])){
+    if (!isset($_SESSION["user_id"])){
         header("location: " . BASE_URL . "/views/auth/login.php");
         die();
     }
-    include BASE_PATH . "/controllers/TransactionController.php";
-    include BASE_PATH . "/controllers/CardController.php";
-    include BASE_PATH . "/controllers/CategoryController.php";
+    include BASE_PATH . "/controllers/Transaction.php";
+    include BASE_PATH . "/controllers/Card.php";
+    include BASE_PATH . "/controllers/Category.php";
 
-    $cards = CardController::GetAllUserCards($_SESSION["user"]["id"]);
+    $cards = Card::GetAllUserCards($_SESSION["user_id"]);
 
-    $incomes_categories = CategoryController::GetCategories("incomes");
-    $expenses_categories = CategoryController::GetCategories("expenses");
+    $incomes_categories = Category::GetCategories("incomes");
+    $expenses_categories = Category::GetCategories("expenses");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +131,7 @@
 
             <tbody>
                 <?php
-                    $transactions = TransactionController::ShowAllTransactions();
+                    $transactions = Transaction::ShowAllTransactions();
 
                     foreach ($transactions as $transaction) {
 

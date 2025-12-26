@@ -3,7 +3,7 @@
     include "../../conf.php";
     if ($_SERVER["REQUEST_METHOD"] === "POST"){
 
-        include BASE_PATH . "/controllers/UserController.php";
+        include BASE_PATH . "/controllers/User.php";
     
         $username = trim($_POST["username"]);
         $email = trim($_POST["email"]);
@@ -13,7 +13,7 @@
         $initial_balance = (float) trim ($_POST["initial_balance"]);
         $type = $_POST["type"];
     
-        $result = UserController::Signup($username, $email, $password, $password_confirmation, $bank, $initial_balance, $type);
+        $result = User::Signup($username, $email, $password, $password_confirmation, $bank, $initial_balance, $type);
 
         if($result["success"]){
             header("location: " . BASE_URL . "/views/auth/login.php");

@@ -3,7 +3,7 @@
 
     use Database\Database;
 
-    class CardController {
+    class Card {
         private static PDO $connection;
 
         public static function Connect (){
@@ -72,7 +72,7 @@
         }
 
         public static function destroy (int $id) {
-            $user_id = $_SESSION["user"]["id"];
+            $user_id = $_SESSION["user_id"];
 
             $count_cards_statment = self::$connection->prepare("
                 select count(*) as total
@@ -107,4 +107,4 @@
         }
     }
 
-    CardController::Connect();
+    Card::Connect();

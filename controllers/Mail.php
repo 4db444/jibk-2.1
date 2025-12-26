@@ -6,7 +6,7 @@
     require BASE_PATH . '/vendor/autoload.php';
     require __DIR__ . '/../mail.conf.php';
 
-    class MailController {
+    class Mail {
         static function Send ($email, $otp) {
             $mail = new PHPMailer(true);
 

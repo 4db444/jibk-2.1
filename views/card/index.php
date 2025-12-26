@@ -1,16 +1,16 @@
 <?php
     include "../../conf.php";
     session_start();
-    if (!isset($_SESSION["user"])){
+    if (!isset($_SESSION["user_id"])){
         header("location: " . BASE_URL . "/views/auth/login.php");
         die();
     }
 
-    include BASE_PATH . "/controllers/CardController.php";
+    include BASE_PATH . "/controllers/Card.php";
 
     $errors = $_SESSION["errors"] ?? [];
     unset($_SESSION["errors"]);
-    $cards = CardController::GetAllUserCards($_SESSION["user"]["id"]);
+    $cards = Card::GetAllUserCards($_SESSION["user_id"]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,8 +90,8 @@
             <tbody>
                 <?php
                     foreach ($cards as $card) {
-                        $total_expenses = CardController::GetTotalExpenses($card["id"]);
-                        $total_incomes = CardController::GetTotalIncomes($card["id"]);
+                        $total_expenses = Card::GetTotalExpenses($card["id"]);
+                        $total_incomes = Card::GetTotalIncomes($card["id"]);
                         $current_balance = ((float) $total_incomes ?? 0) - ((float) $total_expenses ?? 0);
                     
 

@@ -2,7 +2,7 @@
     include "../../conf.php";
     session_start();
 
-    if(!empty($_SESSION["user"])) header ("location: " . BASE_URL . "/views/transactions/transactions.php");
+    if(!empty($_SESSION["user_id"])) header ("location: " . BASE_URL . "/views/transactions/transactions.php");
 
     $error = $_SESSION["error"] ?? [];
 

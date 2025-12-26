@@ -2,7 +2,7 @@
     session_start();
     include __DIR__ . "/../../conf.php";
 
-    if($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_SESSION["user"])){
+    if($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_SESSION["user_id"])){
         session_destroy();
         header("location: " . BASE_URL . "/views/auth/login.php");
     }else{

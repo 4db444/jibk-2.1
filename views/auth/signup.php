@@ -3,7 +3,7 @@
 
     session_start();
 
-    if(!empty($_SESSION["user"])) header ("location: " . BASE_URL . "/views/transactions/transactions.php");
+    if(!empty($_SESSION["user_id"])) header ("location: " . BASE_URL . "/views/transactions/transactions.php");
 
     $errors = $_SESSION["errors"] ?? [];
     $old_values = $_SESSION["old_values"] ?? [];

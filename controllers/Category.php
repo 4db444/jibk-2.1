@@ -4,7 +4,7 @@
 
     use Database\Database;
 
-    class CategoryController {
+    class Category {
         private static PDO $connection;
 
         public static function Connect (){
@@ -36,4 +36,4 @@
         }
     }
 
-    CategoryController::Connect();
+    Category::Connect();

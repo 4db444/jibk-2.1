@@ -1,13 +1,13 @@
 <?php
     session_start();
     include "../../conf.php";
-    include BASE_PATH . "/controllers/CardController.php";
-    include BASE_PATH . "/controllers/TransactionController.php";
-    include BASE_PATH . "/controllers/CategoryController.php";
+    include BASE_PATH . "/controllers/Card.php";
+    include BASE_PATH . "/controllers/Transaction.php";
+    include BASE_PATH . "/controllers/Category.php";
 
-    $transaction = TransactionController::ShowTransaction($_POST["table"], $_POST["id"])->fetch(PDO::FETCH_ASSOC);
-    $categories = CategoryController::GetCategories($_POST["table"]);
-    $cards = CardController::GetAllUserCards($_SESSION["user"]["id"]);
+    $transaction = Transaction::ShowTransaction($_POST["table"], $_POST["id"])->fetch(PDO::FETCH_ASSOC);
+    $categories = Category::GetCategories($_POST["table"]);
+    $cards = Card::GetAllUserCards($_SESSION["user_id"]);
 ?>
 
 <!DOCTYPE html>

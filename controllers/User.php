@@ -1,14 +1,37 @@
 <?php
 
-    require_once __DIR__ . "/CardController.php";
-    require_once __DIR__ . "/TransactionController.php";
-    require_once __DIR__ . "/MailController.php";
+    require_once __DIR__ . "/Card.php";
+    require_once __DIR__ . "/Transaction.php";
     require_once __DIR__ . "/Database.php";
+    require_once __DIR__ . "/OTP.php";
 
     use Database\Database;
 
-    class UserController {
+    class User {
+        private ?string $username = null;
+        private ?string $email = null;
+        private ?string $password = null;
+
         private static PDO $connection;
+
+        public function __construct (string $email, string $password, string $username = null){
+            $this->username = $username;
+            $this->email = $email;
+            $this->password = $password;
+        }
+
+        public static function Store () {
+            $insert_user_statment = self::$connection->prepare("
+                INSERT INTO users (username, email, password)
+                VALUES (:username, :email, :password)
+            ");
+
+            $insert_user_statment->execute([
+                ":username" => $this->username,
+                ":email" => $this->email,
+                ":password" => password_hash($this->password, PASSWORD_DEFAULT)
+            ]);
+        }
 
         public static function Connect (){
             self::$connection = Database::instance();
@@ -26,19 +49,6 @@
             ]);
 
             return $user_statment->fetch(PDO::FETCH_ASSOC);
-        }
-
-        public static function Create (string $username, string $email, string $password) {
-            $insert_user_statment = self::$connection->prepare("
-                INSERT INTO users (username, email, password)
-                VALUES (:username, :email, :password)
-            ");
-
-            $insert_user_statment->execute([
-                ":username" => $username,
-                ":email" => $email,
-                ":password" => password_hash($password, PASSWORD_DEFAULT)
-            ]);
         }
 
         public static function SignUp (string $username, string $email, string $password, string $password_confirmation, string $bank, int $initial_balance, string $type) {
@@ -67,68 +77,39 @@
             ];
 
             // creating the user record
-            self::Create($username, $email, $password);
-
-            $user_statment = self::$connection->prepare("
-                SELECT `id`
-                FROM `users`
-                WHERE `email` = :email
-            ");
+            self::Store($username, $email, $password);
             
-            $user_statment->execute([
-                ":email" => $email
-            ]);
-            
-            $user_id = $user_statment->fetch(PDO::FETCH_ASSOC)["id"];
+            $user_id = self::$connection->lastInsertId();
 
             // creating the card record.
-            CardController::create($bank, $type, 0, $user_id);
+            Card::create($bank, $type, 0, $user_id);
 
-            $card_id_statment = self::$connection->prepare("
-                SELECT cards.id
-                FROM `cards`
-                join users on cards.user_id = users.id
-                where `email` = :email
-            ");
-            
-            $card_id_statment->execute([
-                ":email" => $email
-            ]);
-
-            $card_id = $card_id_statment->fetch(PDO::FETCH_ASSOC)["id"];
+            $card_id = self::$connection->lastInsertId();
 
             // inserting the initial balance.
-            TransactionController::CreateTransaction ("incomes", "Initial Balance", $initial_balance, "the initial balance when you created your acount", null, $card_id, null, false);
+            Transaction::CreateTransaction ("incomes", "Initial Balance", $initial_balance, "the initial balance when you created your acount", null, $card_id, null, false);
             
             return ["success" => true];
         }
 
-        public static function login (string $email, string $password){
+        public function login (){
             $errors = [];
 
             $user_statment = self::$connection->prepare("
-                SELECT * 
+                SELECT *
                 FROM users
                 WHERE email = :email
             ");
 
             $user_statment->execute([
-                ":email" => $email
+                ":email" => $this->email
             ]);
 
             $user = $user_statment->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($password, $user["password"])){
-                $otp_int = random_int(100000, 999999);
-                $otp_statment = self::$connection->prepare("insert into otp (otp, expire_at, user_id) values (:otp, :expire_at, :user_id)");
+            if ($user && password_verify($this->password, $user["password"])){
 
-                $otp_statment->execute([
-                    ":otp" => $otp_int,
-                    ":expire_at" => (new DateTime())->modify("+10 minutes")->format("Y-m-d H:i:s"),
-                    ":user_id" => $user["id"]
-                ]);
-
-                MailController::Send($email, $otp_int);
+                OTP::Send($this->email, $user["id"]);
 
                 return [
                     "success" => true,
@@ -139,6 +120,14 @@
             return [
                 "success" => false,
                 "error" => "Wrong credentials"
+            ];
+        }
+
+        public function logout (){
+            session_destroy();
+
+            return [
+                "success" => false,
             ];
         }
 
@@ -160,4 +149,4 @@
         }
     }
 
-    UserController::Connect();
+    User::Connect();

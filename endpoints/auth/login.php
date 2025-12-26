@@ -1,7 +1,7 @@
 <?php
     session_start();
     include "../../conf.php";
-    include BASE_PATH . "/controllers/UserController.php";
+    include BASE_PATH . "/controllers/User.php";
 
     $error = $_SESSION["error"] ?? [];
     unset($_SESSION["error"]);
@@ -10,7 +10,8 @@
         $email = trim($_POST["email"]);
         $password = $_POST["password"];
 
-        $result = UserController::login($email, $password);
+        $user = new User($email, $password);
+        $result = $user->login();
 
         if(!$result["success"]){
             $_SESSION["error"] = $result["error"];

@@ -1,14 +1,14 @@
 <?php
     session_start();
     include "../../conf.php";
-    include BASE_PATH . "/controllers/CategoryController.php";
+    include BASE_PATH . "/controllers/Category.php";
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         $expense_category_id = $_POST["expense_category_id"];
         $limit = $_POST["limit"];
-        $user_id = $_SESSION["user"]["id"];
+        $user_id = $_SESSION["user_id"];
 
-        CategoryController::SetLimit($expense_category_id, $user_id, $limit);
+        Category::SetLimit($expense_category_id, $user_id, $limit);
     }
     header("location: " . BASE_URL . "/views/category/");
