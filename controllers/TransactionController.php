@@ -12,7 +12,6 @@
         }
 
         static function CreateTransaction (string $type, string $title, float $amount, string $description, $date, int $card_id,$category_id, $user_id, bool $is_reccuring){
-
             if(!empty($category_id) && $type === "expenses"){
                 $category_limit = self::$connection->query("
                     select `limit`
@@ -171,36 +170,6 @@
             ";
 
             return self::$connection->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        static function GetCategegories (string $table) {
-            return self::$connection->query("
-                SELECT *
-                FROM {$table}_categories
-            ")->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        static function GetExpensesCategories(){
-            return self::$connection->query("
-                SELECT * from expenses_categories
-            ")->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        static function GetExpenseCategorieLimit(int $category_id, int $user_id){
-            return self::$connection->query("
-                SELECT * from expense_category_limit 
-                where user_id = $user_id and category_id = $category_id
-            ")->fetch(PDO::FETCH_ASSOC)["limit"] ?? NULL;
-        }
-
-        static function SetLimit ($category_id, $user_id, $limit){
-            self::$connection->query("delete from expense_category_limit where category_id = $category_id and user_id = $user_id");
-            if (!empty($limit)){
-                self::$connection->query("
-                    insert into expense_category_limit (category_id, user_id, `limit`)
-                    values('$category_id', '$user_id', '$limit')
-                ");
-            }
         }
 
         static function GetEventTransactions(){

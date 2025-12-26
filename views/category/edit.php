@@ -1,5 +1,4 @@
 <?php
-    session_start();
     include "../../conf.php";
     
     if($_SERVER["REQUEST_METHOD"] != "POST") header("location: " . BASE_URL . "/views/category");

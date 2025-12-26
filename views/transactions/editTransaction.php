@@ -3,9 +3,10 @@
     include "../../conf.php";
     include BASE_PATH . "/controllers/CardController.php";
     include BASE_PATH . "/controllers/TransactionController.php";
+    include BASE_PATH . "/controllers/CategoryController.php";
 
     $transaction = TransactionController::ShowTransaction($_POST["table"], $_POST["id"])->fetch(PDO::FETCH_ASSOC);
-    $categories = TransactionController::GetCategegories($_POST["table"]);
+    $categories = CategoryController::GetCategories($_POST["table"]);
     $cards = CardController::GetAllUserCards($_SESSION["user"]["id"]);
 ?>
 

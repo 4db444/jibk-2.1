@@ -2,8 +2,9 @@
     session_start();
     include "../../conf.php";
     include BASE_PATH . "/controllers/TransactionController.php";
+    include BASE_PATH . "/controllers/CategoryController.php";
 
-    $expenses_categories = TransactionController::GetExpensesCategories();
+    $expenses_categories = CategoryController::GetCategories("expenses");
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +33,7 @@
             <tbody>
                 <?php
                     foreach ($expenses_categories as $expense_category) {
-                        $expense_category_limit = TransactionController::GetExpenseCategorieLimit($expense_category["id"], $_SESSION["user"]["id"]);
+                        $expense_category_limit = CategoryController::GetExpenseCategorieLimit($expense_category["id"], $_SESSION["user"]["id"]);
                         echo "
                         <tr class='border-b border-gray-200 hover:bg-gray-50'>
                             <td class='py-3 px-2 capitalize'>{$expense_category["name"]}</td>
