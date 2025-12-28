@@ -118,16 +118,19 @@ CREATE TABLE IF NOT EXISTS expenses_events (
 DROP TABLE IF EXISTS transfers;
 CREATE TABLE IF NOT EXISTS transfers (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    sender_id int not null,
-    receiver_id int not null,
+    card_sender_id int not null,
+    card_receiver_id int not null,
+    title VARCHAR(50) not null,
+    description TEXT,
     amount DECIMAL(10,2) NOT NULL,
     date DATE DEFAULT (CURRENT_TIME),
-    FOREIGN KEY (sender_id)
-        REFERENCES users(id)
+    
+    FOREIGN KEY (card_sender_id)
+        REFERENCES cards(id)
         ON DELETE CASCADE,
 
-    FOREIGN KEY(receiver_id)
-        REFERENCES users(id)
+    FOREIGN KEY(card_receiver_id)
+        REFERENCES cards(id)
         ON DELETE CASCADE
 );
 

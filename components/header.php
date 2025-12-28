@@ -9,6 +9,7 @@
             <?php if(!empty($_SESSION["user_id"])): ?>
                 <li><a href="<?= BASE_URL ?>/views/card/index.php">Cards</a></li>
                 <li><a href="<?= BASE_URL ?>/views/category/index.php">Limits</a></li>
+                <li><a href="<?= BASE_URL ?>/views/transfers/index.php">Transfers</a></li>
                 <li><a href="<?= BASE_URL ?>/views/transactions/transactions.php">Transactions</a></li>
                 <li><a href="<?= BASE_URL ?>/views/transactions/dashboard.php">Dashboard</a></li>
                 <li>

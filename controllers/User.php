@@ -20,16 +20,24 @@
             $this->password = $password;
         }
 
-        public static function Store () {
+        public function get_active_card_id(){
+            return self::$connection->query("
+                select cards.id as card_id from cards
+                join users on cards.user_id = users.id
+                where users.email = '$this->email' and cards.is_main = 1
+            ")->fetch()["card_id"] ?? null;
+        }
+
+        public static function Store (string $username, string $email, string $password) {
             $insert_user_statment = self::$connection->prepare("
                 INSERT INTO users (username, email, password)
                 VALUES (:username, :email, :password)
             ");
 
             $insert_user_statment->execute([
-                ":username" => $this->username,
-                ":email" => $this->email,
-                ":password" => password_hash($this->password, PASSWORD_DEFAULT)
+                ":username" => $username,
+                ":email" => $email,
+                ":password" => password_hash($password, PASSWORD_DEFAULT)
             ]);
         }
 
@@ -37,18 +45,54 @@
             self::$connection = Database::instance();
         }
 
-        public static function Find (string $id) {
+        public static function FindById (string $id){
+            try{
+                $user_statment = self::$connection->prepare("
+                    SELECT *
+                    FROM users
+                    WHERE id = :id
+                ");
+
+                $user_statment->execute([
+                    ":id" => $id
+                ]);
+
+                $user = $user_statment->fetch(PDO::FETCH_ASSOC);
+
+                if ($user){
+                    return new self($user["email"], $user["password"], $user["username"]);
+                }
+                return false;
+            }catch(Exception $e){
+                echo $e->getMessage();
+            }
+        }
+
+        public static function FindByEmail (string $email) {
             $user_statment = self::$connection->prepare("
                 SELECT *
                 FROM users
-                WHERE id = :id
+                WHERE email = :email
             ");
 
             $user_statment->execute([
-                ":id" => $id
+                ":email" => $email
             ]);
 
-            return $user_statment->fetch(PDO::FETCH_ASSOC);
+            $user = $user_statment->fetch(PDO::FETCH_ASSOC);
+
+            if ($user){
+                return new self($user["email"], $user["password"], $user["username"]);
+            }
+            return false;
+        }
+
+        public static function FindByCardId (string $card_id){
+            return self::$connection->query("
+                select username, email from users
+                join cards on cards.user_id = users.id
+                where cards.id = $card_id
+            ")->fetch(PDO::FETCH_ASSOC) ?? null;
         }
 
         public static function SignUp (string $username, string $email, string $password, string $password_confirmation, string $bank, int $initial_balance, string $type) {
@@ -82,12 +126,22 @@
             $user_id = self::$connection->lastInsertId();
 
             // creating the card record.
-            Card::create($bank, $type, 0, $user_id);
+            Card::create($bank, $type, 1, $user_id);
 
             $card_id = self::$connection->lastInsertId();
 
             // inserting the initial balance.
-            Transaction::CreateTransaction ("incomes", "Initial Balance", $initial_balance, "the initial balance when you created your acount", null, $card_id, null, false);
+            Transaction::CreateTransaction (
+                "incomes", 
+                "Initial Balance", 
+                $initial_balance, 
+                "the initial balance when you created your Card", 
+                null, 
+                $card_id, 
+                null, 
+                $user_id,
+                false
+            );
             
             return ["success" => true];
         }

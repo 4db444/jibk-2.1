@@ -11,7 +11,17 @@
             self::$connection = Database::instance();
         }
 
-        static function CreateTransaction (string $type, string $title, float $amount, string $description, $date, int $card_id,$category_id, $user_id, bool $is_reccuring){
+        static function CreateTransaction (
+            string $type, 
+            string $title, 
+            float $amount, 
+            string $description, 
+            $date, 
+            int $card_id,
+            $category_id, 
+            $user_id, 
+            bool $is_reccuring
+        ){
             if(!empty($category_id) && $type === "expenses"){
                 $category_limit = self::$connection->query("
                     select `limit`
