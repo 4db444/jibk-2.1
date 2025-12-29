@@ -184,23 +184,6 @@
                 "success" => false,
             ];
         }
-
-        public static function Otp_check (string $user_id, string $otp) {
-            $otp_statment = self::$connection->prepare("
-                SELECT *
-                FROM otp
-                WHERE user_id = :user_id AND otp = :otp AND expire_at >= :current_date
-            ");
-
-            $otp_statment->execute([
-                ":user_id" => $user_id,
-                ":otp" => $otp,
-                ":current_date" => (new DateTime())->format("Y-m-d H:i:s")
-            ]);
-
-            if ($otp_statment->fetch()) return true;
-            return false;
-        }
     }
 
     User::Connect();
